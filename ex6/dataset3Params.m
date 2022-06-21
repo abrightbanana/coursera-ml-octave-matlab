@@ -23,11 +23,29 @@ sigma = 0.3;
 %        mean(double(predictions ~= yval))
 %
 
+vec_const = [0.01; 0.03; 0.1; 0.3; 1; 3; 10; 30];
+C_optimal = Inf;
+sigma_optimal = Inf;
+err_min = Inf;
+
+for i = 1:length(vec_const),
+    C_curr = vec_const(i);
+    for j = 1:length(vec_const),
+      sigma_curr = vec_const(j);
+      model = svmTrain(X, y, C_curr, @(x1, x2) gaussianKernel(x1, x2, sigma_curr));
+      predictions = svmPredict(model, Xval);
+      pre_err = mean(double(predictions ~= yval));
+      if (pre_err < err_min)
+        C_optimal = C_curr;
+        sigma_optimal = sigma_curr;
+        err_min = pre_err;
+      endif;
+    end;
+end;
 
 
-
-
-
+C = C_optimal;
+sigma = sigma_optimal;
 
 % =========================================================================
 
